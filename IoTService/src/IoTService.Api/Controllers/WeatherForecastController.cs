@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace IoTService.Controllers;
+namespace IoTService.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]

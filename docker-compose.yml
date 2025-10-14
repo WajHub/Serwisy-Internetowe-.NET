@@ -17,7 +17,7 @@ services:
       
   iotservice:
     build:
-      context: ./IoTService
+      context: ./IoTService/src
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
