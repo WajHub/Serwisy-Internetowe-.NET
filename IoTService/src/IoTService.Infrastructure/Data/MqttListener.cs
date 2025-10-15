@@ -1,6 +1,8 @@
+using System.Text;
 using IoTService.Application.abstractions;
 using Microsoft.Extensions.Options;
 using MQTTnet;
+using MQTTnet.Extensions.TopicTemplate;
 
 namespace IoTService.Infrastructure.data;
 
@@ -24,15 +26,27 @@ public class MqttListener : IMqttListener
 
         _client.ConnectedAsync += async e =>
         {
-            Console.WriteLine("Połączono z brokerem MQTT!");
+            Console.WriteLine("Connected with MQTT!");
         };
-        //
-        // var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder().WithTopicTemplate(sampleTemplate.WithParameter("id", "2")).Build();
-        //
-        // await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
 
+        _client.ApplicationMessageReceivedAsync += async e =>
+        {
+            string topic = e.ApplicationMessage.Topic;
+            string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 
+            Console.WriteLine($"Recived message on topic: {topic}");
+            Console.WriteLine($"Message: {payload}");
+        };
+        
+        MqttTopicTemplate sampleTemplate = new(_config.Topics[0]);
+        var mqttSubscribeOptions = new MqttClientFactory().CreateSubscribeOptionsBuilder().WithTopicTemplate(sampleTemplate).Build();
+        
         await _client.ConnectAsync(options);
+        
+        await _client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
+
+
+
 
     }
 }
