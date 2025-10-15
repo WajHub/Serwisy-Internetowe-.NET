@@ -1,4 +1,4 @@
-namespace IoTService;
+namespace IoTService.Api;
 
 public class WeatherForecast
 {

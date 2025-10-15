@@ -5,19 +5,35 @@ services:
     ports:
       - "1883:1883"
       - "9001:9001"
-      
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  mqtt-ui:
+    image: emqx/mqttx-web
+    ports:
+      - "80:80"
+
   mongo:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=datasource 
     ports:
       - "27017:27017"
+    healthcheck:
+      test: [ "CMD","mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
       
   iotservice:
     build:
-      context: ./IoTService
+      context: ./IoTService/src
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      mongo:
+        condition: service_healthy
