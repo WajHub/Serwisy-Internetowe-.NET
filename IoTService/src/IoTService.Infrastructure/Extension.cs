@@ -1,3 +1,4 @@
+using IoTService.Application.abstractions;
 using IoTService.Infrastructure.data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,10 @@ public static class Extension
             var options = sp.GetService<IOptions<MongoDbSettings>>();
             return new MongoClient(options?.Value.ConnectionString);
         });
+
+        service.Configure<MqttSettings>(
+            configuration.GetSection("Mqtt"));
+        service.AddSingleton<IMqttListener, MqttListener>();
         return service;
     }
     

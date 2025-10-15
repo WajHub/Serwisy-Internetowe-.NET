@@ -1,3 +1,4 @@
+using IoTService.Application.abstractions;
 using IoTService.Infrastructure;
 using IoTService.Infrastructure.data;
 
@@ -25,5 +26,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var mqttListener = app.Services.GetRequiredService<IMqttListener>();
+await mqttListener.StartAsync();
 
 app.Run();
