@@ -5,7 +5,7 @@ services:
     ports:
       - "1883:1883"
       - "9001:9001"
-      
+
   mongo:
     image: mongo
     restart: always
@@ -15,6 +15,11 @@ services:
       - MONGO_INITDB_DATABASE=datasource 
     ports:
       - "27017:27017"
+    healthcheck:
+      test: [ "CMD","mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
       
   iotservice:
     build:
@@ -22,3 +27,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      mongo:
+        condition: service_healthy
