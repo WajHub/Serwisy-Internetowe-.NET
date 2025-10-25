@@ -7,13 +7,11 @@ namespace IoTService.Api.Controllers;
 [Route("/api/batteries")]
 public class BatterySensorController : ControllerBase
 {
-
-    private readonly ILogger<WeatherForecastController> _logger;
+    
     private readonly BatterySensorService _batterySensorService;
 
-    public BatterySensorController(ILogger<WeatherForecastController> logger, BatterySensorService batterySensorService)
+    public BatterySensorController(BatterySensorService batterySensorService)
     {
-        _logger = logger;
         _batterySensorService = batterySensorService;
     }
 
