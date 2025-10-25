@@ -1,4 +1,5 @@
 using IoTService.Domain.Abstractions.Repositories;
+using IoTService.Domain.Entities;
 
 namespace IoTService.Application.Services;
 
@@ -11,8 +12,8 @@ public class BatterySensorService
         _batterySensorRepository = batterySensorRepository;
     }
 
-    public void Create()
+    public async Task Insert(BatterySensor batterySensor)
     {
-        
+        await _batterySensorRepository.InsertAsync(batterySensor);
     }
 }

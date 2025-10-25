@@ -18,7 +18,7 @@ public class BatterySensorController : ControllerBase
     [HttpPost]
     public IResult Create()
     {
-        _batterySensorService.Create();
+        // _batterySensorService.Create();
         return Results.Ok();
     }
 

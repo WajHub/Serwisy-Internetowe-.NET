@@ -1,15 +1,21 @@
 using System.Text.Json.Serialization;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace IoTService.Domain.Entities;
 
 public class CommonData
 {
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; }
+    
     [JsonPropertyName("sensorId")]
     public string SensorId { get; set; }
     
     [JsonPropertyName("sensorType")] 
-    private string SensorType { get; set; }
+    public string SensorType { get; set; }
     
     [JsonPropertyName("timestamp")]
-    private DateTime Timestamp { get; set; }
+    public DateTime Timestamp { get; set; }
 }

@@ -13,10 +13,11 @@ public class MqttListener : IMqttListener
 {
     private readonly MqttSettings _config;
     private readonly IMqttClient _client;
-    private readonly BatteryConsumer _batteryConsumer = new();
+    private readonly BatteryConsumer _batteryConsumer;
 
-    public MqttListener(IOptions<MqttSettings> options)
+    public MqttListener(IOptions<MqttSettings> options, BatteryConsumer batteryConsumer)
     {
+        _batteryConsumer = batteryConsumer;
         _config = options.Value;
         _client = new MqttClientFactory().CreateMqttClient();
     }

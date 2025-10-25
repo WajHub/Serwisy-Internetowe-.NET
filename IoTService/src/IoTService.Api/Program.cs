@@ -1,3 +1,4 @@
+using IoTService.Application;
 using IoTService.Application.abstractions;
 using IoTService.Infrastructure;
 using IoTService.Infrastructure.data;
@@ -10,7 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
