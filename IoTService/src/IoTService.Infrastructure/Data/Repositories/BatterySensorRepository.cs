@@ -7,7 +7,6 @@ namespace IoTService.Infrastructure.data.Repositories;
 public class BatterySensorRepository : IBatterySensorRepository
 {
     private readonly IMongoCollection<BatterySensor> _collection;
-    private bool disposed = false;
 
     public BatterySensorRepository(IMongoDatabase mongoDatabase)
     {

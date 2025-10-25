@@ -14,14 +14,25 @@ public class MqttListener : IMqttListener
     private readonly MqttSettings _config;
     private readonly IMqttClient _client;
     private readonly BatteryConsumer _batteryConsumer;
+    private readonly DriveSystemConsumer _driveSystemConsumer;
+    private readonly EnvironmentalConsumer _environmentalConsumer;
+    private readonly VehicleDynamicsConsumer _vehicleDynamicsConsumer;
 
-    public MqttListener(IOptions<MqttSettings> options, BatteryConsumer batteryConsumer)
+    public MqttListener(
+        IOptions<MqttSettings> options, 
+        BatteryConsumer batteryConsumer, 
+        DriveSystemConsumer driveSystemConsumer, 
+        EnvironmentalConsumer environmentalConsumer, 
+        VehicleDynamicsConsumer vehicleDynamicsConsumer)
     {
-        _batteryConsumer = batteryConsumer;
         _config = options.Value;
         _client = new MqttClientFactory().CreateMqttClient();
+        _batteryConsumer = batteryConsumer;
+        _driveSystemConsumer = driveSystemConsumer;
+        _environmentalConsumer = environmentalConsumer;
+        _vehicleDynamicsConsumer = vehicleDynamicsConsumer;
     }
-
+    
     public async Task StartAsync()
     {
         var options = new MqttClientOptionsBuilder()
@@ -52,9 +63,48 @@ public class MqttListener : IMqttListener
                     Console.WriteLine("ERROR!");
                 }
             }
+            else if (topic.StartsWith("iot/vehicle/DriveSystemSensor/"))
+            {
+                DriveSystemSensor? driveSystemSensor = 
+                    JsonSerializer.Deserialize<DriveSystemSensor>(payload);
+                if (driveSystemSensor is not null)
+                {
+                    await _driveSystemConsumer.HandleMessage(driveSystemSensor);
+                }
+                else
+                {
+                    Console.WriteLine("ERROR!");
+                }
+            }
+            else if (topic.StartsWith("iot/vehicle/VehicleDynamicsSensor/"))
+            {
+                VehicleDynamicsSensor? vehicleDynamicsSensor = 
+                    JsonSerializer.Deserialize<VehicleDynamicsSensor>(payload);
+                if (vehicleDynamicsSensor is not null)
+                {
+                    await _vehicleDynamicsConsumer.HandleMessage(vehicleDynamicsSensor);
+                }
+                else
+                {
+                    Console.WriteLine("ERROR!");
+                }
+            }
+            else if (topic.StartsWith("iot/vehicle/EnvironmentalSensor/"))
+            {
+                EnvironmentalSensor? environmentalSensor = 
+                    JsonSerializer.Deserialize<EnvironmentalSensor>(payload);
+                if (environmentalSensor is not null)
+                {
+                    await _environmentalConsumer.HandleMessage(environmentalSensor);
+                }
+                else
+                {
+                    Console.WriteLine("ERROR!");
+                }
+            }
             else
             {
-                // Console.WriteLine($"Unknown topic {topic}");
+                Console.WriteLine($"Unknown topic {topic}");
             }
         };
         

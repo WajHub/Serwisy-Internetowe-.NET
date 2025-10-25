@@ -22,6 +22,9 @@ public static class Extension
             return new MongoClient(options?.Value.ConnectionString).GetDatabase(options?.Value.DatabaseName);
         });
         service.AddSingleton<IBatterySensorRepository, BatterySensorRepository>();
+        service.AddSingleton<IDriveSystemSensorRepository, DriveSystemSensorRepository>();
+        service.AddSingleton<IEnvironmentalSensorRepository, EnvironmentalSensorRepository>();
+        service.AddSingleton<IVehicleDynamicSensorRepository, VehicleDynamicSensorRepository>();
 
         service.Configure<MqttSettings>(
             configuration.GetSection("Mqtt"));
