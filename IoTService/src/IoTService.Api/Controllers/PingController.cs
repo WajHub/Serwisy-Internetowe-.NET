@@ -7,17 +7,17 @@ namespace IoTService.Api.Controllers;
 [Route("/api/ping")]
 public class PingController : ControllerBase
 {
-    private readonly IMongoClient _mongoClient;
+    private readonly IMongoDatabase _mongoDatabase;
     
-    public PingController(IMongoClient mongoClient)
+    public PingController(IMongoDatabase mongoDatabase)
     {
-        _mongoClient = mongoClient;
+        _mongoDatabase = mongoDatabase;
     }
     
     [HttpGet]
     public IResult Ping()
     {
-        var db = _mongoClient.ListDatabaseNames().ToList();
+        var db = _mongoDatabase.ListCollectionNames().ToList();
         return Results.Ok(new { Message = "Pong", Databases = db});
     }
 }
