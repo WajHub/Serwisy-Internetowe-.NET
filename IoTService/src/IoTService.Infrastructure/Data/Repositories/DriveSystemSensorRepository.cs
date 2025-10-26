@@ -12,6 +12,26 @@ public class DriveSystemSensorRepository : IDriveSystemSensorRepository
     {
         _collection = mongoDatabase.GetCollection<DriveSystemSensor>("DriveSystem");
     }
+    
+    public async Task<IEnumerable<DriveSystemSensor>> FindAllAsync(DateTime fromDate, DateTime toDate)
+    {
+        var data = await _collection
+            .Find(sensor =>  sensor.Timestamp <= fromDate && sensor.Timestamp >= toDate).ToListAsync();
+        return data;
+    }
+    
+    public async Task<IEnumerable<DriveSystemSensor>> FindAllByInstanceAsync(string instance, DateTime fromDate, DateTime toDate)
+    {
+        var data = await _collection
+            .Find(sensor =>  
+                sensor.Timestamp <= fromDate && 
+                sensor.Timestamp >= toDate &&
+                sensor.SensorId == instance
+            )
+            .ToListAsync();
+        return data;
+    }
+
 
     public async Task InsertAsync(DriveSystemSensor driveSystemSensor)
     {

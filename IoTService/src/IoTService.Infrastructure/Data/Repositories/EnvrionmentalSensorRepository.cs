@@ -12,6 +12,25 @@ public class EnvironmentalSensorRepository : IEnvironmentalSensorRepository
     {
         _collection = mongoDatabase.GetCollection<EnvironmentalSensor>("Environmental");
     }
+    
+    public async Task<IEnumerable<EnvironmentalSensor>> FindAllAsync(DateTime fromDate, DateTime toDate)
+    {
+        var data = await _collection
+            .Find(sensor =>  sensor.Timestamp <= fromDate && sensor.Timestamp >= toDate).ToListAsync();
+        return data;
+    }
+    
+    public async Task<IEnumerable<EnvironmentalSensor>> FindAllByInstanceAsync(string instance, DateTime fromDate, DateTime toDate)
+    {
+        var data = await _collection
+            .Find(sensor =>  
+                sensor.Timestamp <= fromDate && 
+                sensor.Timestamp >= toDate &&
+                sensor.SensorId == instance
+            )
+            .ToListAsync();
+        return data;
+    }
 
     public async Task InsertAsync(EnvironmentalSensor environmental)
     {
