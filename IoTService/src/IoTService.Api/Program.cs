@@ -17,8 +17,24 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
 
-var app = builder.Build();
+// CORS: allow frontend dev server(s) to call this API during development.
+// Adjust origins as needed for production.
+builder.Services.AddCors(options =>
+{
+    // Development-friendly CORS policy. Allows requests from the frontend dev server.
+    // If you still see CORS failures, the browser Origin may differ (127.0.0.1 vs localhost or using https).
+    // For a quick development workaround allow any origin (only for dev). Replace with explicit origins for production.
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        // SetIsOriginAllowed returns true for all origins — useful for development where the exact origin may vary.
+        policy.SetIsOriginAllowed(origin => true)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -27,6 +43,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Enable CORS using the policy defined above
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
