@@ -50,3 +50,11 @@ services:
       - '3000:80'
     depends_on:
       - iotservice
+
+  generator:
+    build:
+      context: ./IoTGenerator
+      dockerfile: Dockerfile
+    depends_on:
+      - mqtt
+      
