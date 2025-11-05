@@ -10,6 +10,8 @@ Icon
 *.tmp
 *.bak
 *.sublime-workspace
+node_modules
+.vs/
 
 .idea/
 *.sln.iml
@@ -51,3 +53,4 @@ out/
 *.userosscache
 *.suo
 *.sln.docstates
+.env

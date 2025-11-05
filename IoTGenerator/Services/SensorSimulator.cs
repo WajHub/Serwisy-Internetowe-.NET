@@ -10,7 +10,8 @@ public static class SensorSimulator
         {
             var sensorData = GenerateSensorData(sensor, random);
             await MqttPublisher.PublishMessageAsync(client, sensor.Type, sensor.Id, sensorData, "AUTO");
-            await Task.Delay(sensor.IntervalMs);
+            int randomJitter = random.Next(-1000, 1000);
+            await Task.Delay(sensor.IntervalMs + randomJitter);
         }
     }
 
