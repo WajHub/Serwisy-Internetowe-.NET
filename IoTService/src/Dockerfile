@@ -9,7 +9,6 @@ WORKDIR /src
 COPY "IoTService.Api/IoTService.Api.csproj" "IoTService.Api/"
 COPY "IoTService.Api/appsettings.json" "IoTService.Api/"
 COPY "IoTService.Api/appsettings.Development.json" "IoTService.Api/"
-COPY "IoTService.Api/SensorTokenABI.json" "IoTService.Api/"
 COPY "IoTService.Application/IoTService.Application.csproj" "IoTService.Application/"
 COPY "IoTService.Domain/IoTService.Domain.csproj" "IoTService.Domain/"
 COPY "IoTService.Infrastructure/IoTService.Infrastructure.csproj" "IoTService.Infrastructure/"
