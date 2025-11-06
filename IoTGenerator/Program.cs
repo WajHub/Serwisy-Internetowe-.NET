@@ -12,7 +12,7 @@ var sensorConfigs = ConfigurationManager.RunInteractiveSetup();
 
 Console.WriteLine("Configuration complete. Connecting to MQTT broker...");
 
-string mqttHost = "localhost";
+string mqttHost = "mqtt";
 int mqttPort = 1883;
 
 var factory = new MqttFactory();

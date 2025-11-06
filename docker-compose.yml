@@ -3,15 +3,15 @@ services:
     image: eclipse-mosquitto
     restart: always
     ports:
-      - "1883:1883"
-      - "9001:9001"
+      - '1883:1883'
+      - '9001:9001'
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
 
   mqtt-ui:
     image: emqx/mqttx-web
     ports:
-      - "80:80"
+      - '80:80'
 
   mongo:
     image: mongo
@@ -19,24 +19,42 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=password
-      - MONGO_INITDB_DATABASE=datasource 
+      - MONGO_INITDB_DATABASE=datasource
     ports:
-      - "27017:27017"
+      - '27017:27017'
     healthcheck:
-      test: [ "CMD","mongosh", "--eval", "db.adminCommand('ping')" ]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 5s
       timeout: 5s
       retries: 3
-      
+
   iotservice:
     build:
       context: ./IoTService/src
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - '8080:8080'
+      - '8081:8081'
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       mongo:
         condition: service_healthy
+  frontend:
+    build:
+      context: ./IoTFrontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: http://localhost:8080/api
+    ports:
+      - '3000:80'
+    depends_on:
+      - iotservice
+
+  generator:
+    build:
+      context: ./IoTGenerator
+      dockerfile: Dockerfile
+    depends_on:
+      - mqtt
+      
