@@ -74,10 +74,17 @@ public class BlockchainService : IBlockchainService
         }
     }
 
-    public virtual Task<BigInteger> BalanceOfQueryAsync(string sensorId)
+    public async Task<string> BalanceOfQueryAsync(string sensorId)
     {
-        var owner = _settings.SensorWallets.GetValueOrDefault(sensorId);
-        return _tokenService.BalanceOfQueryAsync(owner);
+        if (!_settings.SensorWallets.TryGetValue(sensorId, out var address))
+            throw new KeyNotFoundException($"Sensor '{sensorId}' not found.");
+
+        var balance = await _tokenService.BalanceOfQueryAsync(address);
+        var decimals = await _tokenService.DecimalsQueryAsync();
+        
+        var formattedBalance = (decimal)balance / (decimal)Math.Pow(10, decimals);
+
+        return formattedBalance.ToString("0.####");
     }
 
 }

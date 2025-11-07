@@ -17,7 +17,7 @@ public class WalletController
     [HttpGet("{instance}")]
     public async Task<IResult> GetBalance(string instance, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate)
     {
-        var balance = await _service.BalanceOfQueryAsync(instance);
-        return Results.Ok(balance.ToString());
+        var result = await _service.BalanceOfQueryAsync(instance);
+        return Results.Ok(result);
     }
 }

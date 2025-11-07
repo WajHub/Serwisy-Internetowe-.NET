@@ -5,5 +5,5 @@ namespace IoTService.Application.abstractions;
 public interface IBlockchainService
 {
     Task RewardSensor(string sensorId);
-    Task<BigInteger> BalanceOfQueryAsync(string owner);
+    Task<string> BalanceOfQueryAsync(string owner);
 }
