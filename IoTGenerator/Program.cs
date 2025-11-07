@@ -27,9 +27,14 @@ await mqttClient.ConnectAsync(options, CancellationToken.None);
 Console.WriteLine("Connected to MQTT broker.");
 
 Console.WriteLine($"Starting automatic simulation...");
-var simulationTasks = sensorConfigs.Select(sensor =>
-    SensorSimulator.SimulateSensorAsync(mqttClient, sensor)
-);
+var simulationTasks = new List<Task>();
+var random = new Random();
+
+foreach (var sensor in sensorConfigs)
+{
+    simulationTasks.Add(SensorSimulator.SimulateSensorAsync(mqttClient, sensor));
+    await Task.Delay(random.Next(200, 500));
+}
 var simulationTask = Task.WhenAll(simulationTasks);
 
 Console.ForegroundColor = ConsoleColor.Green;

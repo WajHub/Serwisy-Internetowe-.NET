@@ -1,0 +1,7 @@
+{
+    "projectName": "Solidity.VechicleSensorToken",
+    "namespace": "Solidity.VechicleSensorToken",
+    "lang":0,
+    "autoCodeGen":true,
+    "projectPath": "./IoTService/src/IoTService.Infrastructure/SolidityVechicleSensorToken"
+}
