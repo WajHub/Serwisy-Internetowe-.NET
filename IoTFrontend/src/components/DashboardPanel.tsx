@@ -11,9 +11,9 @@ import Divider from '@mui/material/Divider';
 import { fetchLastRecords } from '../services/api';
 import { SensorRecord } from '../types';
 
-export default function DashboardPanel({ records }: { records: SensorRecord[] }) {
-	const preferredOrder = ['environmental', 'battery', 'drive-system', 'vehicle-dynamic'];
+export const preferredOrder = ['environmental', 'battery', 'drive-system', 'vehicle-dynamic'];
 
+export default function DashboardPanel({ records }: { records: SensorRecord[] }) {
 	function normalizeForRoute(t: string) {
 		if (!t) return t;
 		const key = t.toLowerCase().replace(/[^a-z0-9]/g, '');
