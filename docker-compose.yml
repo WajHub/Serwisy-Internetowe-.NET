@@ -57,4 +57,3 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - mqtt
-      

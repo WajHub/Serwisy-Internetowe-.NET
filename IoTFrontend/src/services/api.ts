@@ -70,4 +70,28 @@ export async function fetchLastRecords(
 	return data.slice(0, limit);
 }
 
+export async function fetchWallet(instance: string): Promise<number | null> {
+	try {
+		const res = await axios.get<any>(`${base}/wallet/${encodeURIComponent(instance)}`);
+		const data = res.data;
+		if (data == null) return null;
+		if (typeof data === 'number') return data;
+		if (typeof data === 'string') {
+			const n = Number(data);
+			return isNaN(n) ? null : n;
+		}
+		// try common fields
+		const candidates = ['balance', 'sol', 'amount'];
+		for (const c of candidates) {
+			if (data[c] != null) {
+				const n = Number(data[c]);
+				return isNaN(n) ? null : n;
+			}
+		}
+		return null;
+	} catch (e) {
+		return null;
+	}
+}
+
 export type { Filters };

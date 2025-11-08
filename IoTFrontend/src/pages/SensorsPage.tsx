@@ -6,6 +6,7 @@ import FiltersPanel from '../components/FiltersPanel';
 import DataTable from '../components/DataTable';
 import DashboardPanel from '../components/DashboardPanel';
 import ChartsPanel from '../components/ChartsPanel';
+import WalletPanel from '../components/WalletPanel';
 import { fetchSensors } from '../services/api';
 import { SensorRecord } from '../types';
 
@@ -67,6 +68,9 @@ export default function SensorsPage() {
 					</Paper>
 					<Paper sx={{ p: 2 }}>
 						<ChartsPanel records={data} />
+					</Paper>
+					<Paper sx={{ p: 2, mt: 2 }}>
+						<WalletPanel records={data} />
 					</Paper>
 				</Grid>
 			</Grid>
