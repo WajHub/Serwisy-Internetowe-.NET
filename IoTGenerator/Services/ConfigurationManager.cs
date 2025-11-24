@@ -6,8 +6,7 @@ public static class ConfigurationManager
     {
         Console.WriteLine("Do you want to use default settings or configure manually?");
         Console.Write("Enter 'default' or 'manual': ");
-        // string? choice = Console.ReadLine();
-        string choice = "default";
+        string? choice = Console.ReadLine();
         var defaultConfigs = GetDefaultConfigs();
 
         if (choice?.Equals("manual", StringComparison.OrdinalIgnoreCase) == true)
