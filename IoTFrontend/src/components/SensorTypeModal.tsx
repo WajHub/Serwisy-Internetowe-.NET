@@ -18,11 +18,13 @@ export default function SensorTypeModal({
 	onClose,
 	sensorType,
 	instance,
+	syncKey,
 }: {
 	open: boolean;
 	onClose: () => void;
 	sensorType: string;
 	instance?: string;
+	syncKey?: number;
 }) {
 	const [records, setRecords] = useState<SensorRecord[]>([]);
 	const [instanceAggs, setInstanceAggs] = useState<
@@ -31,7 +33,6 @@ export default function SensorTypeModal({
 
 	useEffect(() => {
 		let mounted = true;
-		let t: any = null;
 		async function load() {
 			try {
 				const r = await fetchLastRecords(sensorType, instance ?? 'all', 100);
@@ -72,14 +73,12 @@ export default function SensorTypeModal({
 
 		if (open) {
 			load();
-			t = setInterval(() => load(), 1000);
 		}
 
 		return () => {
 			mounted = false;
-			if (t) clearInterval(t);
 		};
-	}, [open, sensorType, instance]);
+	}, [open, sensorType, instance, syncKey]);
 
 	const agg = useMemo(() => {
 		if (!records || records.length === 0) return null;
@@ -101,7 +100,6 @@ export default function SensorTypeModal({
 	}, [records]);
 
 	return (
-		// Use full width and a larger maxWidth so the modal content spans the available space like Filters
 		<Dialog open={open} onClose={onClose} fullWidth maxWidth='xl'>
 			<DialogTitle>{sensorType} (last 100) — live</DialogTitle>
 			<DialogContent dividers sx={{ width: '100%' }}>

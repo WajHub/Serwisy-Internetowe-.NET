@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -18,10 +18,12 @@ export default function DataTable({
 	records,
 	loading,
 	onReload,
+	resetKey,
 }: {
 	records: SensorRecord[];
 	loading: boolean;
 	onReload: () => void;
+	resetKey?: number;
 }) {
 	const [orderBy, setOrderBy] = useState<'timestamp' | 'sensorId'>('timestamp');
 	const [order, setOrder] = useState<'asc' | 'desc'>('desc');
@@ -45,6 +47,10 @@ export default function DataTable({
 		() => sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
 		[sorted, page, rowsPerPage]
 	);
+
+	useEffect(() => {
+		setPage(0);
+	}, [resetKey]);
 
 	return (
 		<div style={{ width: '100%' }}>
