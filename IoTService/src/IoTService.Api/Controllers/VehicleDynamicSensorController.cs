@@ -1,3 +1,4 @@
+using System.Text;
 using IoTService.Application.Services;
 using IoTService.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,41 @@ public class VehicleDynamicSensorController : ControllerBase
         var data = await _vehicleDynamicSensorService.FindAllByInstanceAsync(instance, fromDate, toDate);
         return Results.Ok(data);
     }
+    
+    [HttpGet("export/csv")]
+    public async Task<IActionResult> ExportCsv([FromQuery] string? instance, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate)
+    {
+        var data = instance is null
+            ? await _vehicleDynamicSensorService.FindAllAsync(fromDate, toDate)
+            : await _vehicleDynamicSensorService.FindAllByInstanceAsync(instance, fromDate, toDate);
+
+        var csv = GenerateCsv(data);
+
+        return File(
+            Encoding.UTF8.GetBytes(csv),
+            "text/csv",
+            "vehicle_dynamics_export.csv"
+        );
+    }
+
+    private string GenerateCsv(IEnumerable<VehicleDynamicsSensor> data)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("SensorId,Speed,Acceleration,SteeringAngle,TiltAngle,Timestamp");
+
+        foreach (var r in data)
+        {
+            sb.AppendLine($"{r.SensorId}," +
+                          $"{r.Data.Speed}," +
+                          $"{r.Data.Acceleration}," +
+                          $"{r.Data.SteeringAngle}," +
+                          $"{r.Data.TiltAngle}," +
+                          $"{r.Timestamp:O}");
+        }
+
+        return sb.ToString();
+    }
+
 
 
 }
