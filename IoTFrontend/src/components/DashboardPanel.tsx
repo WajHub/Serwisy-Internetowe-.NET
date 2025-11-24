@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import SensorTypeModal from './SensorTypeModal';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -13,7 +12,8 @@ import { SensorRecord } from '../types';
 
 export const preferredOrder = ['environmental', 'battery', 'drive-system', 'vehicle-dynamic'];
 
-export default function DashboardPanel({ records }: { records: SensorRecord[] }) {
+export default function DashboardPanel() {
+	const sensorTypes = useMemo(() => preferredOrder.slice(), []);
 	function normalizeForRoute(t: string) {
 		if (!t) return t;
 		const key = t.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -32,7 +32,6 @@ export default function DashboardPanel({ records }: { records: SensorRecord[] })
 		};
 		return map[key] ?? key;
 	}
-	const sensorTypes = useMemo(() => Array.from(new Set(records.map(r => r.sensorType))), [records]);
 	const [sensorTypeAverages, setSensorTypeAverages] = useState<Array<{ type: string; avg: Record<string, number> }>>(
 		[]
 	);
@@ -40,7 +39,6 @@ export default function DashboardPanel({ records }: { records: SensorRecord[] })
 	const [instanceAverages, setInstanceAverages] = useState<
 		Record<string, Array<{ sensorId: string; avg: Record<string, number> }>>
 	>({});
-	const [modalInfo, setModalInfo] = useState<{ type: string; instance?: string } | null>(null);
 
 	function computeAvgFromRecords(recs: SensorRecord[]) {
 		if (!recs || recs.length === 0) return {} as Record<string, number>;
@@ -59,7 +57,7 @@ export default function DashboardPanel({ records }: { records: SensorRecord[] })
 
 	useEffect(() => {
 		let mounted = true;
-		let t: any = null;
+		let timer: any = null;
 
 		async function loadTypes() {
 			try {
@@ -87,22 +85,24 @@ export default function DashboardPanel({ records }: { records: SensorRecord[] })
 		}
 
 		loadTypes();
-		t = setInterval(() => loadTypes(), 1000);
+		timer = setInterval(() => loadTypes(), 1000);
+
 		return () => {
 			mounted = false;
-			if (t) clearInterval(t);
+			if (timer) clearInterval(timer);
 		};
 	}, [sensorTypes]);
 
 	useEffect(() => {
 		if (!expandedType) return;
 		let mounted = true;
-		let t: any = null;
+		let timer: any = null;
 
 		async function loadInstances() {
 			try {
 				const type = expandedType as string;
-				let instances = Array.from(new Set(records.filter(r => r.sensorType === type).map(r => r.sensorId)));
+				const allRecs = await fetchLastRecords(type, 'all', 1000);
+				let instances = Array.from(new Set(allRecs.map(r => r.sensorId)));
 				instances = [...instances].sort();
 				instances = instances.slice(0, 50);
 				const promises = instances.map(async inst => {
@@ -118,12 +118,12 @@ export default function DashboardPanel({ records }: { records: SensorRecord[] })
 		}
 
 		loadInstances();
-		t = setInterval(() => loadInstances(), 1000);
+		timer = setInterval(() => loadInstances(), 1000);
 		return () => {
 			mounted = false;
-			if (t) clearInterval(t);
+			if (timer) clearInterval(timer);
 		};
-	}, [expandedType, records]);
+	}, [expandedType]);
 
 	return (
 		<Box sx={{ width: '100%' }}>
@@ -178,10 +178,7 @@ export default function DashboardPanel({ records }: { records: SensorRecord[] })
 											const keysI = Object.keys(inst.avg);
 											return (
 												<Grid item component={'div' as any} xs={6} sm={4} md={3} key={inst.sensorId}>
-													<Card
-														variant='outlined'
-														sx={{ cursor: 'pointer' }}
-														onClick={() => setModalInfo({ type: st.type, instance: inst.sensorId })}>
+													<Card variant='outlined' sx={{ cursor: 'pointer' }}>
 														<CardContent
 															sx={{
 																display: 'flex',
@@ -213,15 +210,6 @@ export default function DashboardPanel({ records }: { records: SensorRecord[] })
 					);
 				})}
 			</Grid>
-
-			{modalInfo && (
-				<SensorTypeModal
-					open={!!modalInfo}
-					onClose={() => setModalInfo(null)}
-					sensorType={modalInfo.type}
-					instance={modalInfo.instance}
-				/>
-			)}
 		</Box>
 	);
 }

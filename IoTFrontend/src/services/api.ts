@@ -31,7 +31,6 @@ export async function fetchSensors(filters: Filters): Promise<SensorRecord[]> {
 			results.push(...r);
 		})
 	);
-	// sort by timestamp desc
 	results.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 	return results;
 }

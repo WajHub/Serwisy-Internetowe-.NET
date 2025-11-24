@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
@@ -19,35 +19,29 @@ export default function SensorsPage() {
 		sensorType: 'all',
 		instance: 'all',
 	});
-
-	useEffect(() => {
-		let mounted = true;
-		let timer: any = null;
-
-		async function load() {
-			setLoading(true);
-			try {
-				const res = await fetchSensors(filters);
-				if (mounted) setData(res);
-			} finally {
-				if (mounted) setLoading(false);
-			}
-		}
-
-		load();
-
-		timer = setInterval(() => load(), 1000);
-
-		return () => {
-			mounted = false;
-			if (timer) clearInterval(timer);
-		};
-	}, [filters]);
+	const [tableResetKey, setTableResetKey] = useState(0);
+	const [syncKey, setSyncKey] = useState(0);
 
 	return (
 		<Box>
 			<Paper sx={{ p: 2, mb: 2 }}>
-				<FiltersPanel onChange={f => setFilters(prev => ({ ...prev, ...f }))} />
+				<FiltersPanel
+					onChange={f => {
+						const newFilters = (prev => ({ ...prev, ...f }))(filters);
+						setFilters(newFilters);
+						setTableResetKey(k => k + 1);
+						(async () => {
+							setLoading(true);
+							try {
+								const res = await fetchSensors(newFilters);
+								setData(res);
+								setSyncKey(k => k + 1);
+							} finally {
+								setLoading(false);
+							}
+						})();
+					}}
+				/>
 			</Paper>
 
 			<Grid container spacing={2}>
@@ -56,21 +50,29 @@ export default function SensorsPage() {
 						<DataTable
 							records={data}
 							loading={loading}
-							onReload={() => {
-								fetchSensors(filters).then(setData);
+							resetKey={tableResetKey}
+							onReload={async () => {
+								setLoading(true);
+								try {
+									const res = await fetchSensors(filters);
+									setData(res);
+									setSyncKey(k => k + 1);
+								} finally {
+									setLoading(false);
+								}
 							}}
 						/>
 					</Paper>
 				</Grid>
 				<Grid item component={'div' as any} xs={12} md={4}>
 					<Paper sx={{ p: 2, mb: 2 }}>
-						<DashboardPanel records={data} />
+						<ChartsPanel records={data} syncKey={syncKey} />
 					</Paper>
-					<Paper sx={{ p: 2 }}>
-						<ChartsPanel records={data} />
+					<Paper sx={{ p: 2, mb: 2 }}>
+						<DashboardPanel />
 					</Paper>
 					<Paper sx={{ p: 2, mt: 2 }}>
-						<WalletPanel records={data} />
+						<WalletPanel records={data} syncKey={syncKey} />
 					</Paper>
 				</Grid>
 			</Grid>

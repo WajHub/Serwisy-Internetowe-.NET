@@ -16,7 +16,7 @@ function aggregateValues(values: number[], agg: Agg) {
 	return Math.max(...values);
 }
 
-export default function ChartsPanel({ records }: { records: SensorRecord[] }) {
+export default function ChartsPanel({ records, syncKey }: { records: SensorRecord[]; syncKey?: number }) {
 	const [sensorType, setSensorType] = useState<string>('');
 	const [instance, setInstance] = useState<string>('');
 	const [valueKey, setValueKey] = useState<string | null>(null);
@@ -88,6 +88,11 @@ export default function ChartsPanel({ records }: { records: SensorRecord[] }) {
 
 		return arr;
 	}, [records, sensorType, instance, valueKey, agg]);
+
+	// React to syncKey changes (no-op): allows parent to trigger redraws when user hits Sync
+	useEffect(() => {
+		// no-op, dependency ensures component recomputes when syncKey changes
+	}, [syncKey]);
 
 	if (!records || records.length === 0) return <Typography>No data</Typography>;
 
